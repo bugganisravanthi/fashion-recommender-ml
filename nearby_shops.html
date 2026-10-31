@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nearby Clothing Shops</title>
+</head>
+<body style="font-family: Arial; text-align:center;">
+
+    <h1>Nearby Clothing Shops</h1>
+    <p>PIN Code: {{ pincode }}</p>
+
+    {% for shop in shops %}
+        <div style="border:1px solid #ccc; padding:20px; margin:15px auto; max-width:450px;">
+            <h2>{{ shop.name }}</h2>
+            <p>Address: {{ shop.address }}</p>
+            <p>Phone: {{ shop.phone }}</p>
+
+            <form action="/select-shop" method="POST">
+                <input type="hidden" name="shop_name" value="{{ shop.name }}">
+                <input type="hidden" name="pincode" value="{{ pincode }}">
+                <button type="submit">Select Shop</button>
+            </form>
+        </div>
+    {% endfor %}
+
+    <a href="/">Back to Fashion Recommender</a>
+
+</body>
+</html>

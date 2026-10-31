@@ -1,0 +1,37 @@
+.form-group {
+    margin: 15px auto;
+    text-align: center;
+}
+
+select {
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: white;
+    font-size: 15px;
+}
+
+button[type="submit"] {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 25px;
+    background-color: #a8325b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#age {
+    width: 200px;
+    height: 42px;
+    padding: 8px 12px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 15px;
+    cursor: pointer;
+    appearance: auto;
+}

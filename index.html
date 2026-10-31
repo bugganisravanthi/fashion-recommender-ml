@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fashion Recommender Using ML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8fb;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #a83261;
+        }
+
+        .form-box {
+            background: white;
+            max-width: 650px;
+            margin: 25px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #ddd;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 90%;
+            max-width: 450px;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #a83261;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            margin-top: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px auto;
+        }
+
+        .image-grid img {
+            width: 180px;
+            height: 210px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .outfit-card {
+            background: white;
+            max-width: 500px;
+            margin: 15px auto;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #ddd;
+        }
+
+        .shop-section {
+            margin-top: 45px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Fashion Recommender Using ML</h1>
+    <p>Find outfits based on your age, person category and clothing category.</p>
+
+    <div class="form-box">
+        <form method="POST" action="/">
+
+            <label>Category of Person</label>
+            <select name="person_category" required>
+                <option value="">Select Category</option>
+                {% for person in [
+                    "Women", "Men", "Girls", "Boys",
+                    "Baby Boy", "Baby Girl",
+                    "Children Boys", "Children Girls",
+                    "Teenagers Boys", "Teenagers Girls",
+                    "Grandparents"
+                ] %}
+                <option value="{{ person|lower }}"
+                    {% if selected_person == person|lower %}selected{% endif %}>
+                    {{ person }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Select Your Age</label>
+            <select name="age" required>
+                <option value="">Select Age</option>
+                {% for age in [
+                    "1 Year", "2 Years", "3 Years", "4 Years",
+                    "5 Years", "6 Years", "7 Years", "8 Years",
+                    "9 Years", "10 Years", "11 Years", "12 Years",
+                    "13 Years", "14 Years", "15 Years", "16 Years",
+                    "17 Years", "18 Years", "19 Years", "20 Years",
+                    "21 Years", "22 Years", "23 Years", "24 Years",
+                    "25 Years", "26 Years", "27 Years", "28 Years",
+                    "29 Years", "30 Years", "40 Years", "50 Years",
+                    "60 Years", "70 Years"
+                ] %}
+                <option value="{{ age }}"
+                    {% if selected_age == age %}selected{% endif %}>
+                    {{ age }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Select Occasion</label>
+            <select name="occasion" required>
+                <option value="">Select Occasion</option>
+                {% for occasion in [
+                    "Casual", "College", "Office", "Wedding", "Party"
+                ] %}
+                <option value="{{ occasion }}"
+                    {% if selected_occasion == occasion %}selected{% endif %}>
+                    {{ occasion }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Enter Your Budget (₹)</label>
+            <input type="number" name="budget" min="1"
+                   placeholder="Enter your budget"
+                   value="{{ selected_budget }}" required>
+
+            <label>Clothing Category</label>
+            <select name="category" required>
+                <option value="">Select Category</option>
+                {% for category in [
+                    "Casual", "Formal", "Traditional", "Western", "Party"
+                ] %}
+                <option value="{{ category|lower }}"
+                    {% if selected_category == category|lower %}selected{% endif %}>
+                    {{ category }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Recommend My Outfits</button>
+        </form>
+    </div>
+
+    {% if request.method == "POST" %}
+       <h2>Matching Clothing Images</h2>
+{% if images %}
+    <div class="image-grid">
+        {% for filename in images %}
+            <div class="outfit-card">
+                <img src="{{ url_for('static', filename=filename) }}" alt="Matching clothing">
+                <p><strong>Occasion:</strong> {{ selected_occasion }}</p>
+                <p><strong>Style:</strong> {{ selected_category }}</p>
+                <p><strong>Color:</strong> As shown</p>
+                <p><strong>Budget:</strong> ₹{{ selected_budget }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+        <h2>Recommended Outfits</h2>
+
+        {% if recommendations %}
+            {% for outfit in recommendations %}
+                <div class="outfit-card">
+                
+                    <p>Occasion: {{ outfit.Occasion }}</p>
+                    <p>Style: {{ outfit.style }}</p>
+                    <p>Color: {{ outfit.color }}</p>
+                    <p>Budget: ₹{{ outfit.budget }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No matching outfits found in the dataset.</p>
+        {% endif %}
+    {% endif %}
+
+    <div class="shop-section">
+        <h2>Shop Nearby & Get Fast Delivery!</h2>
+        <p>Find local clothing shops near you.</p>
+
+        <form action="/nearby-shops" method="POST">
+            <label>Enter Your PIN Code</label>
+            <input type="text" name="pincode"
+                   maxlength="6" pattern="[0-9]{6}"
+                   placeholder="Enter 6-digit PIN code" required>
+            <br>
+            <button type="submit">Find Nearby Shops</button>
+        </form>
+        <p>Shop listings in this project are demo listings. Confirm shop details and delivery with each shop.</p>
+    </div>
+
+</body>
+</html>
