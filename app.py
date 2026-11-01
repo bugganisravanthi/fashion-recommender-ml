@@ -215,21 +215,24 @@ def home():
 
 
 # Demo shop list: replace these with verified local shop details.
-SHOPS = [
+shops = [
     {
-        "name": "Local Clothing Shop 1",
-        "address": "Add your local shop address",
-        "phone": "Confirm with shop"
+        "name": "Demo Fashion Store 1",
+        "address": "Kondapur, Hyderabad",
+        "phone": "Demo contact - not verified",
+        "service_pincodes": ["500084", "500081"]
     },
     {
-        "name": "Local Clothing Shop 2",
-        "address": "Add your local shop address",
-        "phone": "Confirm with shop"
+        "name": "Demo Fashion Store 2",
+        "address": "Kukatpally, Hyderabad",
+        "phone": "Demo contact - not verified",
+        "service_pincodes": ["500072", "500085"]
     },
     {
-        "name": "Local Clothing Shop 3",
-        "address": "Add your local shop address",
-        "phone": "Confirm with shop"
+        "name": "Demo Fashion Store 3",
+        "address": "Begumpet, Hyderabad",
+        "phone": "Demo contact - not verified",
+        "service_pincodes": ["500016", "500003"]
     }
 ]
 
@@ -244,24 +247,40 @@ def nearby_shops():
     if not pincode.isdigit() or len(pincode) != 6:
         return "Please enter a valid 6-digit PIN code."
 
+    matching_shops = [
+    shop for shop in shops
+    if pincode in shop["service_pincodes"]
+]
+
     return render_template(
-        "nearby_shops.html",
-        pincode=pincode,
-        shops=SHOPS
-    )
+    "nearby_shops.html",
+    pincode=pincode,
+    shops=matching_shops
+)
 
 
 @app.route("/select-shop", methods=["POST"])
 def select_shop():
-    shop_name = request.form.get(
-        "shop_name", "Selected Shop"
-    ).strip()
-
+    shop_name = request.form.get("shop_name", "").strip()
     pincode = request.form.get("pincode", "").strip()
 
+    selected_shop = next(
+        (
+            shop for shop in shops
+            if shop["name"] == shop_name
+            and pincode in shop["service_pincodes"]
+        ),
+        None
+    )
+
+    if selected_shop is None:
+        return "Shop not found", 404
+
     return render_template(
-        "select_shop.html",
-        shop_name=shop_name,
+        "shop_selected.html",
+        shop_name=selected_shop["name"],
+        address=selected_shop["address"],
+        phone=selected_shop["phone"],
         pincode=pincode
     )
 
